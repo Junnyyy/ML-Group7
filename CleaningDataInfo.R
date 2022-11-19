@@ -1,4 +1,5 @@
-#Read in the dataset by replacing '[file path]' with the path that leads to the healthcare-dataset-stroke-data.csv local file.
+#Read in the dataset by replacing '[file path]' with the path that leads to the healthcare-dataset-stroke-data.csv local file:
+#library(readr)
 #stroke <- read_csv("[file path]/healthcare-dataset-stroke-data.csv", col_types = cols(gender = col_factor(levels = c("Male", "Female", "Other")), hypertension = col_factor(levels = c("0", "1")), heart_disease = col_factor(levels = c("0", "1")), ever_married = col_factor(levels = c("No", "Yes")), work_type = col_factor(levels = c("children", "Govt_job", "Never_worked", "Private", "Self-employed")), Residence_type = col_factor(levels = c("Rural", "Urban")), bmi = col_number(), smoking_status = col_factor(levels = c("formerly smoked", "never smoked", "smokes")), stroke = col_factor(levels = c("0", "1"))))
 
 #Notable fixes:
