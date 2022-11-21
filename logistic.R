@@ -3,6 +3,7 @@ health2 = na.omit(health)
 health2 <- health2[,-1] #remove id column
 
 #create model with all predictors
+set.seed(500)
 fit.health = glm(stroke ~ ., family = "binomial", data=health2)
 summary(fit.health)
 
@@ -46,7 +47,7 @@ rownames(goodness.fit) = c("fit.health","better.health","best.health")
 print(goodness.fit)
 
 #some info for explaining why we're picking the predictors from better.health:
-#lower residual dev, higher R^2, and lower AIC for better.health shows that including the heart_disease predictor helps to creat a better model
+#lower residual dev, higher R^2, and lower AIC for better.health shows that including the heart_disease predictor helps to create a better model
 
 
 #logistic reg. coefficients for equation:
@@ -58,31 +59,60 @@ print(goodness.fit)
 #avg_glucose_level: 0.004701
 
 
-
+test.error = 0
+train.error=0
 #train & test:
-
-set.seed(2)
-#Select 80% of the data
-sample = sample.int(n = nrow(health2),size = round(.80*nrow(health2)), replace = FALSE)
+for (i in 1:10) {
+  set.seed(i)
+  #Select 80% of the data
+  sample = sample.int(n = nrow(health2),size = round(.80*nrow(health2)), replace = FALSE)
   
-train = health2[sample,]
-test = health2[-sample,]
-#create model on training data
-health.train = glm(formula = stroke ~ age + hypertension + heart_disease + avg_glucose_level, family = "binomial", data = train)
-summary(health.train)
-
-#train pred
-prediction.train = predict(health.train, type="response")
-predict.stroke.train = ifelse(prediction.train < 0.5,"0","1")
-(conf.mat.train = table(predict.stroke.train,train$stroke))
-#training error rate:
-(conf.mat.train[1,2]+conf.mat.train[2,1])/sum(conf.mat.train)
+  train = health2[sample,]
+  test = health2[-sample,]
+  #create model on training data
+  health.train = glm(formula = stroke ~ age + hypertension + heart_disease + avg_glucose_level, family = "binomial", data = train)
+  summary(health.train)
   
-#test pred
-predict.health = predict(health.train, type = "response", newdata = test)
-predict.stroke = ifelse(predict.health< 0.5,"0","1")
-(conf.test = table(predict.stroke,test$stroke))
-#testing error rate:
-((conf.test[1,2]+conf.test[2,1])/sum(conf.test))
+  #train pred
+  prediction.train = predict(health.train, type="response")
+  predict.stroke.train = ifelse(prediction.train < 0.5,"0","1")
+  (conf.mat.train = table(predict.stroke.train,train$stroke))
+  #training error rate:
+  rows.train = nrow(conf.mat.train)
+  if(rows.train < 2) {
+    train.error[i] = (conf.mat.train[1,2]/sum(conf.mat.train))
+    #print(error)
+  } else {
+    train.error[i] = (conf.mat.train[1,2]+conf.mat.train[2,1])/sum(conf.mat.train)
+    #print(error)
+  }
+  #train.error = train.error + error
+    
+  #test pred
+  predict.health = predict(health.train, type = "response", newdata = test)
+  predict.stroke = ifelse(predict.health< 0.5,"0","1")
+  (conf.test = table(predict.stroke,test$stroke))
+  #testing error rate:
+  
+  rows = nrow(conf.test)
+  if(rows < 2) {
+    test.error[i] = (conf.test[1,2]/sum(conf.test))
+    #print(error)
+  } else {
+    test.error[i] = (conf.test[1,2]+conf.test[2,1])/sum(conf.test)
+    #print(error)
+  }
+  #test.error = test.error + error
+}
+
+#mean of the train error rate
+train.error.mean = mean(train.error)
+train.error
+train.error.mean
+#mean of the test error
+test.error.mean = mean(test.error)
+test.error
+test.error.mean
+#(test.error/10)
 
 
