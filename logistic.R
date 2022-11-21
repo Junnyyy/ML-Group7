@@ -61,7 +61,7 @@ print(goodness.fit)
 
 #train & test:
 
-set.seed(101)
+set.seed(2)
 #Select 80% of the data
 sample = sample.int(n = nrow(health2),size = round(.80*nrow(health2)), replace = FALSE)
   
