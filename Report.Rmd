@@ -1,0 +1,23 @@
+---
+title: "Report"
+output: word_document
+date: "2022-11-21"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+If the linear regression is used to predict a binary response, the
+resulting model may not restrict the predicted Y values within 0
+and 1.
+
+describe logistic reg choice
+We chose to use a logistic regression model for our data because our response variable is qualitative with two classes. It was desirable to have a model predict the probability of a person having a stroke using binary classification. If linear regression is used to predict the probability of whether or not a person will have a stroke, then the model may have predicted Y values outside of our intended range of 0-1. The logistic regression model allows us to enforce this restriction of range.
+
+restrict the predicted y values between the set range of 0 and 1.
+
+explain model choice
+write model equation
+test/train models
+test error rate
+interpretation of full model in regards to our question: which factors demonstrate statistical significance in relation to having a stroke?
