@@ -80,9 +80,9 @@ print(goodness.fit)
 ```
 
 ```{r}
+##training & testing
 test.error = 0
 train.error=0
-#train & test:
 for (i in 1:10) {
   set.seed(i)
   #Select 80% of the data
@@ -92,47 +92,42 @@ for (i in 1:10) {
   test = health2[-sample,]
   #create model on training data
   health.train = glm(formula = stroke ~ age + hypertension + heart_disease + avg_glucose_level, family = "binomial", data = train)
-  summary(health.train)
+  #summary(health.train)
   
-  #train pred
+  #predicting based on the model fit with the training data
   prediction.train = predict(health.train, type="response")
   predict.stroke.train = ifelse(prediction.train < 0.5,"0","1")
   (conf.mat.train = table(predict.stroke.train,train$stroke))
-  #training error rate:
+  
   rows.train = nrow(conf.mat.train)
   if(rows.train < 2) {
     train.error[i] = (conf.mat.train[1,2]/sum(conf.mat.train))
-    #print(error)
   } else {
     train.error[i] = (conf.mat.train[1,2]+conf.mat.train[2,1])/sum(conf.mat.train)
-    #print(error)
   }
-  #train.error = train.error + error
     
-  #test pred
+  #predicting based on the model fit with the testing data
   predict.health = predict(health.train, type = "response", newdata = test)
   predict.stroke = ifelse(predict.health< 0.5,"0","1")
   (conf.test = table(predict.stroke,test$stroke))
-  #testing error rate:
   
   rows = nrow(conf.test)
   if(rows < 2) {
     test.error[i] = (conf.test[1,2]/sum(conf.test))
-    #print(error)
   } else {
     test.error[i] = (conf.test[1,2]+conf.test[2,1])/sum(conf.test)
-    #print(error)
   }
-  #test.error = test.error + error
 }
-
+#Train error rate for each sample:
+train.error
 #mean of the train error rate
 train.error.mean = mean(train.error)
-train.error
 train.error.mean
+
+#Test error rate for each sample:
+test.error
 #mean of the test error
 test.error.mean = mean(test.error)
-test.error
 test.error.mean
 ```
 
