@@ -1,0 +1,21 @@
+---
+title: "rreee"
+output: word_document
+date: "2022-11-27"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```  
+  
+[INSERT INITIAL GLM() AND SUMMARY]
+    As the summary shows, the predictors age, hypertension, and avg_glucose_level show high levels of significance, and the predictor heart_disease show moderate levels of significance. Since our p-values for all four predictors are less than 0.1, we can confidently reject the null hypothesis that states H0: B0 = B1= …= Bn. To confirm that these variables are significant, we used the backwards step() function to see if it would give us the same significant variables, and it did.
+[INSERT STEP()]
+By removing those predictors that had little to no significance to predicting the response variable, we are able to refit our data into a second model (better.fit) with the four predictors that are significant. The original model with all predictors had an AIC of 1173.8, while the second model with the four significant predictors had an AIC of 1159.9. As there was not much of a difference between the first and second model, we decided to remove the lowest significant predictor (heart_disease1) out of the four to perform one last model refitting of our data. This time, our AIC for the third model (best.health) came out to be 1162.1, which was a slight increase compared to the second model. 
+P(stroke = 1) = exp(b0 + b3*age + b4*hypertension + b9*avg_glucose_level)  1 + exp(b0 + b3*age + b4*hypertension + b9*avg_glucose_level)  
+[INSERT SUMMARY OF BETTER AND BEST]
+    Additional information was obtained by using the Goodness of Fit statistical hypothesis test. Given the three models we tested above, we are able to determine each models’ null deviance, residual deviance, R^2 value, AIC value, and BIC value. The lower the residual deviance, AIC, and BIC values, the better the model is able to predict the value of the response variable. As for R^2, a value closest to 1 is best. 
+
+[INSERT GOODNESS FIT]
+Between all three models, better.health and best.health provided the closest fit for our data, with better.health having a slight advantage in lower residual deviance and AIC values. The test results show that each model's R^2 value is extremely low, with values being between 0.1 and 0.2, informing us that only 10%-20% of the variance can be explained by our models. This means that using logistics regression to fit our data may not result in the best fitting model. Even so, we can conclude that the model better.health (with predictors age, hypertension1, heart_disease1, and avg_glucose_level) had the best fit compared to the other models and is somewhat accurate in predicting whether or not a stroke will occur.
+

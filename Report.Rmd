@@ -17,7 +17,7 @@ Possible Predictors:
 
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 ```
 ## Cleaning the data  
 To use this data set, we first converted variables to their correct representations and then omitted any incomplete observations.  
@@ -25,7 +25,7 @@ To use this data set, we first converted variables to their correct representati
 ### Notable fixes: 
 * The categorical variable smoking_status was reformatted to remove the level "Unknown", as it was used to represent unavailable data. Any cells that previously had "Unknown" were updated to reflect their unavailable status. 
 * The quantitative variable bmi was fixed by converting the data type from character to numeric. This change does not apply to non-numeric cells, so the cells containing "N/A" were changed to reflect their unavailable status in the now numeric column.  
-```{r, echo=FALSE, include=FALSE}
+```{r, include=FALSE}
 library(readr)
 # Load in health Data
 data <- read_csv("C:/Users/Alyssa Guillory/Desktop/MATH 4322/GROUP PROJ/Project/ML-Group7/healthcare-dataset-stroke-data.csv", col_types = cols(gender = col_factor(levels = c("Male", "Female", "Other")), hypertension = col_factor(levels = c("0", "1")), heart_disease = col_factor(levels = c("0", "1")), ever_married = col_factor(levels = c("No", "Yes")), work_type = col_factor(levels = c("children", "Govt_job", "Never_worked", "Private", "Self-employed")), Residence_type = col_factor(levels = c("Rural", "Urban")), bmi = col_number(), smoking_status = col_factor(levels = c("formerly smoked", "never smoked", "smokes")), stroke = col_factor(levels = c("0", "1"))), na = c("Unknown", "N/A", ""))
@@ -42,25 +42,42 @@ health = na.omit(health)
 We chose to use a logistic regression model for our data because our response variable is qualitative with two classes. It was desirable to have a model predict the probability of a person having a stroke using binary classification. If linear regression is used to predict the probability of whether or not a person will have a stroke, then the model may have predicted Y values outside of our intended range of 0-1. The logistic regression model allows us to enforce this restriction of range.  
 
 ## Model Formula   
+Our basic logistic regression formula with all our predictors would be as follows:  
 
+```{r log reg model formula, out.width = '100%'}
+knitr::include_graphics("logreg.png")
+```  
 
-```{r, eval=FALSE, include=FALSE}
+```{r, include=FALSE}
+library(ggplot2)
+library(GGally)
+ggpairs(health[,c(2:4,8,11)])
+```  
+
+This is what our logistic regression formula would look like if we considered all of our predictors and the response variable being stroke. However, we automatically did not consider the unique identifier (id) as this variable is only used to identify patients, which does not have a significant influence on predicting the probability of strokes. Using the glm() function, we created our initial logistic model with stroke being the response and all the other variables as predictors (except id).
+
+```{r, include=FALSE}
 #create model with all predictors
 set.seed(500)
 health.glm = glm(stroke ~ ., family = "binomial", data=health)
 summary(health.glm)
+```  
+
+As the summary shows, the predictors age, hypertension, and avg_glucose_level show high levels of significance, and the predictor heart_disease show moderate levels of significance. Since our p-values for all four predictors are less than 0.1, we can confidently reject the null hypothesis that states H0: B0 = B1= …= Bn. To confirm that these variables are significant, we used the backwards step() function to see if it would give us the same significant variables, and it did.
+```{r, include=FALSE}
 
 #create model with significant predictors found from doing stepwise backward method on original model
-step(health.glm, direction = "backward")
-health2.glm = glm(formula = stroke ~ age + hypertension + heart_disease + avg_glucose_level, 
-    family = "binomial", data = health)
+health2.glm = step(health.glm, direction = "backward")
+#health2.glm = glm(formula = stroke ~ age + hypertension + heart_disease + avg_glucose_level, 
+#    family = "binomial", data = health)
 
 #create a model w/out heart_disease
 health3.glm = glm(formula = stroke ~ age + hypertension + avg_glucose_level, family = "binomial", data = health)
 
 ```  
+By removing the predictors that had little to no significance in predicting the response variable, we are able to refit our data into a second model (better.fit) with the four predictors that are significant. The original model with all predictors had an AIC of 1173.8, while the second model with the four significant predictors had an AIC of 1159.9. As there was not much of a difference between the first and second model, we decided to remove the lowest significant predictor (heart_disease1) out of the four to perform one last model refitting of our data. This time, our AIC for the third model (best.health) came out to be 1162.1, which was a slight increase compared to the second model.
 
-```{r, eval=FALSE, include=FALSE}
+```{r, echo=FALSE}
 #comparing models
 #reminder: table w/null dev, residual dev, r^2, AIC for each model
 
@@ -105,10 +122,12 @@ print(goodness.fit)
 #avg_glucose_level: 0.004701
 ```  
 
-```{r, eval=FALSE, include=FALSE}
+```{r}
 ##training & testing
 test.error = 0
-train.error=0
+train.error = 0
+test.sensitivity = 0
+test.specificity = 0
 for (i in 1:10) {
   set.seed(i)
   #Select 80% of the data
@@ -140,32 +159,36 @@ for (i in 1:10) {
   rows = nrow(conf.test)
   if(rows < 2) {
     test.error[i] = (conf.test[1,2]/sum(conf.test))
-    test.sensitivity = 0/conf.test[1,2]
-    test.specificity = conf.test[1,1]/conf.test[1,1]
-  } else {
+    test.sensitivity[i] = 0
+    test.specificity[i] = conf.test[1,1]/conf.test[1,1]
+  } else if(ncol(conf.test)<1) {
     test.error[i] = (conf.test[1,2]+conf.test[2,1])/sum(conf.test)
-    test.sensitivity = conf.test[2,2]/conf.test[1,2]+conf.test[2,2]
-    test.specificity = conf.test[1,1]/conf.test[1,1]+conf.test[2,1]
+    test.sensitivity[i] = 0
+    test.specificity[i] = conf.test[1,1]/(conf.test[1,1]+conf.test[2,1])
+  }
+  else {
+    test.error[i] = (conf.test[1,2]+conf.test[2,1])/sum(conf.test)
+    test.sensitivity[i] = conf.test[2,2]/(conf.test[1,2]+conf.test[2,2])
+    test.specificity[i] = conf.test[1,1]/(conf.test[1,1]+conf.test[2,1])
   }
 }
-#Train error rate for each sample:
-train.error
-#mean of the train error rate
-train.error.mean = mean(train.error)
-train.error.mean
+```  
 
-#Test error rate for each sample:
-test.error
-#mean of the test error
-test.error.mean = mean(test.error)
-test.error.mean
+```{r}
+#Mean of the train error rate
+(train.error.mean = mean(train.error))
+#Mean of the test error
+(test.error.mean = mean(test.error))
 #Test Sensitivity
 test.sensitivity
+(test.sensitivity.mean = mean(test.sensitivity))
 #Test Specificity
 test.specificity
+(test.specificity.mean = mean(test.specificity))
 #Training data - observations used to train or teach the method how to estimate f.
 #Test data - observations used to determine the accuracy of estimating f.
 ```  
+
 
 explain model choice  
 write model equation  
