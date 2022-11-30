@@ -1,0 +1,57 @@
+---
+title: "ML Project - Strokes"
+author: "Giselle Ruiz"
+date: "11/18/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Classification Decision Tree
+
+For our second model, we decided to explore using a tree based model. More specifically, we decided on a classification decision tree, once again due to our response variable being qualitative with two classes. Using a tree based model would allow us to more easily visualize the probability of a person having a stroke, all based on our predictor variables. Furthermore, with a classification tree, we would be able to perform multiple actions, such as pruning, bagging, and random forest, to improve our model and its’ error rate. 
+
+\vspace{1em}
+
+**Base Decision Tree**
+
+We begun by making our base decision tree. 
+
+\textcolor{red}{Add tree, base prediction, and error rate}
+
+With the given generated model, we find that many of our tree nodes lead to No stroke. We also found that out of our  __ predictors, only 4 (work_type, age, avg_glucose_level, and smoking_status) appear on our tree. With this information, we can conclude that those are the most important predictors. 
+
+\vspace{1em}
+
+**Pruning the base tree**
+
+We decided that the first step that could potentially help us get a better model would be to prune our tree. 
+
+\textcolor{red}{Add pruning r code / output}
+
+We see that after pruning, our prediction (and error rate) stay the same as it was in our base tree. 
+
+\vspace{1em}
+
+**Bagging Model**
+
+The next step we wanted to try on our model was bagging our original decision tree. 
+
+\textcolor{red}{Add bagging r code / output}
+
+With bagging, we found that our error rate actually increased. While this specifically didn’t help in creating a better model, by taking advantage of looking at the importance and the new tree, we are able to do further analysis. In the importance graphs, we are introduced to predictors that did not appear on our base diagram at all. However, when comparing the tree with bagging to the base tree, we are able to see that they are exactly the same. 
+
+\vspace{1em}
+
+**Random Forest Model**
+
+Our final attempt to getting a better model would be implementing the random forest model. 
+
+\textcolor{red}{Add random forest r code / output}
+
+Similarly to bagging, by using random forest on our model, we are introduced to predictors that did not appear in our base tree through the importance graphs. However, our 4 important predictors from our base decision tree remained the same when looking at the actual tree obtained from random forest, as once again, the tree outputted was the same as the base decision tree created. 
+
+
