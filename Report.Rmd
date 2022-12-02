@@ -145,7 +145,7 @@ Additional information was obtained by using the Goodness of Fit statistical hyp
 print(goodness.fit)
 ```
 
-Between all three models, better.health and best.health provided the closest fit for our data, with better.health having a slight advantage in lower residual deviance and AIC values. The test results show that each model's R\^2 value is extremely low, with values being between 0.1 and 0.2, informing us that only 10%-20% of the variance can be explained by our models. This means that using logistic regression to fit our data may not result in the best fitting model. Even so, we can conclude that the model better.health (with predictors age, hypertension1, heart_disease1, and avg_glucose_level) had the best fit compared to the other models and is somewhat accurate in predicting whether or not a stroke will occur. \newpage
+Between all three models, health2.glm and health3.glm provided the closest fit for our data, with health2.glm having a slight advantage in lower residual deviance and AIC values. The test results show that each model's R\^2 value is extremely low, with values being between 0.1 and 0.2, informing us that only 10%-20% of the variance can be explained by our models. This means that using logistic regression to fit our data may not result in the best fitting model. Even so, we can conclude that the model better.health (with predictors age, hypertension1, heart_disease1, and avg_glucose_level) had the best fit compared to the other models and is somewhat accurate in predicting whether or not a stroke will occur. \newpage
 
 ```{r, include=FALSE}
 ##training & testing
