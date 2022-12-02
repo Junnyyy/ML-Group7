@@ -1,69 +1,88 @@
 ---
 title: "Stroke Analysis Report"
 author: "Christine Do, Alyssa Guillory, Johnny Le, Giselle Ruiz, Christopher Turcios, Jimmy Vuong"
-date: "2022-11-21"
+date: "2022-12-2"
+header-includes:
+ \usepackage{graphicx}
 output:
   pdf_document: default
   word_document: default
 ---
 
-# Introduction
-
-Response Variable:
-
--   stroke:
-
-Possible Predictors:
-
--   smoking_status: The smoking status of the observation. Factor variable with 3 levels: "formerly smoked", "never smoked", and "smokes".
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
-```
+```   
+\newpage
 
-## Cleaning the data
+## Introduction  
+With heart disease being the leading cause of death in the United States, we think it’s important to examine the factors that may lead to strokes. Examining the factors for strokes helps predict and create an image of strokes and heart disease. Our data is sourced from Kaggle with a confidential source and is designated for educational purposes only.
 
+### Dataset Information  
+Data Variables:   
+
+-   smoking_status: The smoking status of the observation. [Categorical factor w/3 levels]
+-   id: The unique identifier for the given observation [numeric]
+-   gender: The gender of the observation [Categorical Factor w/3 levels]
+-   age: Age of the observation [numeric]
+-   hypertension: Whether or not the observation has hypertension [Binary dummy variable]
+-   heart_disease: Whether or not the observation has heart disease [Binary dummy variable]
+-   ever_married: Whether or not the observation is married [Binary dummy variable]
+-   work_type: The type of work the observation participates in [Categorical Factor w/5 levels]
+-   Residence_type: The location in which the observation is located [Categorical factor w/2 levels]
+-   avg_glucose_level: The average glucose level [numeric]
+-   bmi: The body mass index [numeric]
+-   smoking_status: The smoking status of the observation. [Categorical factor w/3 levels]
+-   stroke: If the observation has had a stroke [Binary dummy variable]
+
+#### Cleaning the data
 To use this data set, we first converted variables to their correct representations and then omitted any incomplete observations.
 
-### Notable fixes:
-
+##### Notable fixes:
 -   The categorical variable smoking_status was reformatted to remove the level "Unknown", as it was used to represent unavailable data. Any cells that previously had "Unknown" were updated to reflect their unavailable status.
--   The quantitative variable bmi was fixed by converting the data type from character to numeric. This change does not apply to non-numeric cells, so the cells containing "N/A" were changed to reflect their unavailable status in the now numeric column.\
+-   The quantitative variable bmi was fixed by converting the data type from character to numeric. This change does not apply to non-numeric cells, so the cells containing "N/A" were changed to reflect their unavailable status in the now numeric column.
 
 ```{r, include=FALSE}
 library(readr)
 # Load in health Data
-data <- read_csv("healthcare-dataset-stroke-data.csv", col_types = cols(gender = col_factor(levels = c("Male", "Female", "Other")), hypertension = col_factor(levels = c("0", "1")), heart_disease = col_factor(levels = c("0", "1")), ever_married = col_factor(levels = c("No", "Yes")), work_type = col_factor(levels = c("children", "Govt_job", "Never_worked", "Private", "Self-employed")), Residence_type = col_factor(levels = c("Rural", "Urban")), bmi = col_number(), smoking_status = col_factor(levels = c("formerly smoked", "never smoked", "smokes")), stroke = col_factor(levels = c("0", "1"))), na = c("Unknown", "N/A", ""))
+health <- read_csv("healthcare-dataset-stroke-data.csv",
+  col_types = cols(
+    gender = col_factor(levels = c("Male", "Female", "Other")),
+    hypertension = col_factor(levels = c("0", "1")),
+    heart_disease = col_factor(levels = c("0", "1")),
+    ever_married = col_factor(levels = c("No", "Yes")),
+    work_type = col_factor(
+      levels =
+        c("children", "Govt_job", "Never_worked", "Private", "Self-employed")
+    ),
+    Residence_type = col_factor(levels = c("Rural", "Urban")),
+    bmi = col_number(),
+    smoking_status = col_factor(
+      levels =
+        c("formerly smoked", "never smoked", "smokes")
+    ),
+    stroke = col_factor(levels = c("0", "1"))
+  ),
+  na = c("Unknown", "N/A", "")
+)
 # Remove ID column
-health = data[,-1]
+health = health[,-1]
 # Omit NA values
 health = na.omit(health)
-```
-
----**still need to list the rest of the variables, short description of data, and the question we want to answer**
-
+```   
+### Main Question
+Which factors demonstrate statistical significance in relation to the response variable stroke.
 \newpage
 
-# Logistic Regression Model
+## Logistic Regression (Christine Do, Alyssa Guillory, Jimmy Vuong)
+We chose to use a logistic regression model for our data because our response variable is qualitative with two classes. It was desirable to have a model predict the probability of a person having a stroke using binary classification. If linear regression had been used to predict the probability of whether or not a person will have a stroke instead, then the model may have predicted Y values outside of our intended range of 0-1. The logistic regression model allows us to enforce this restriction of range.
 
-We chose to use a logistic regression model for our data because our response variable is qualitative with two classes. It was desirable to have a model predict the probability of a person having a stroke using binary classification. If linear regression is used to predict the probability of whether or not a person will have a stroke, then the model may have predicted Y values outside of our intended range of 0-1. The logistic regression model allows us to enforce this restriction of range.
-
-## Model Formula
-
+### Model Formula
 Our basic logistic regression formula with all our predictors would be as follows:
 
 ```{r log reg model formula, out.width = '100%'}
 knitr::include_graphics("logreg.png")
-```
-
-```{r, eval=FALSE, include=FALSE}
-library(ggplot2)
-library(GGally)
-ggpairs(health[,c(2:4,8,11)])
-```
-
-This is what our logistic regression formula would look like if we considered all of our predictors and the response variable being stroke. However, we automatically did not consider the unique identifier (id) as this variable is only used to identify patients, which does not have a significant influence on predicting the probability of strokes. Using the glm() function, we created our initial logistic model with stroke being the response and all the other variables as predictors (except id).
-
+```   
+This is the logistic regression formula when we consider all of our variables as predictors for the response variable stroke. However, we automatically excluded id as a predictor, as it is a unique number arbitrarily used to identify patients, therefore we know it does not influence our response variable. Using the glm() function, we created our initial logistic model with stroke being the response and all the other variables as predictors.  
 ```{r,include=FALSE}
 #create model with all predictors
 set.seed(500)
@@ -75,14 +94,11 @@ health2.glm = step(health.glm, direction = "backward")
 
 #create a model w/out heart_disease
 health3.glm = glm(formula = stroke ~ age + hypertension + avg_glucose_level, family = "binomial", data = health)
-```
-
+```   
 ```{r}
 summary(health.glm)
-```
-
-As the summary shows, the predictors age, hypertension, and avg_glucose_level show high levels of significance, and the predictor heart_disease show moderate levels of significance. Since our p-values for all four predictors are less than 0.1, we can confidently reject the null hypothesis that states $H_0$: $B_0$ = $B_1$= ... = $B_n$. To confirm that these variables are significant, we used the backwards step() function to see if it would give us the same significant variables, and it did.
-
+```  
+As the summary shows, the predictors: age, hypertension, and avg_glucose_level, show high levels of significance and the predictor heart_disease shows a moderate level of significance. Since our p-values for all four of these predictors are less than $\alpha$=0.1, we believe that these are the most important variables in predicting the probability of having a stoke; To confirm that these variables are significant, we used the backwards step() function to see if it would give us the same significant variables, and it did.   
 ```{r,echo=TRUE}
 #Model created from backwards step()
 summary(health2.glm)
@@ -90,53 +106,33 @@ summary(health2.glm)
 summary(health3.glm)
 ```
 
-By removing the predictors that had little to no significance in predicting the response variable, we are able to refit our data into a second model (health2.glm) with the four predictors that are significant. The original model with all predictors had an AIC of 1173.8, while the second model with the four significant predictors had an AIC of 1159.9. As there was not much of a difference between the first and second model, we decided to remove the lowest significant predictor (heart_disease) out of the four to perform one last model refitting of our data. This time, our AIC for the third model (health3.glm) came out to be 1162.1, which was a slight increase compared to the second model.
+By removing the predictors that had little to no significance in predicting the response variable, we are able to refit our data into a second model (health2.glm) with the four predictors that are significant. The original model with all predictors had an AIC of 1173.8, while the second model with the four significant predictors had an AIC of 1159.9. As there was not much of a difference between the first and second model, we decided to remove the lowest significant predictor (heart_disease) out of the four to perform one last model refitting on our data. This time, our AIC for the third model (health3.glm) came out to be 1162.1, which was a slight increase compared to the second model.   
+$$P(stroke = 1) =$$
 
-$$
-P(stroke = 1) = \frac{exp(b_0 + b_3*age + b_4*hypertension + b_9*avg\_glucose\_level)}{1 + exp(b_0 + b_3*age + b_4*hypertension + b_9*avg\_glucose\_level)}
-$$
-
+$$\tiny\frac{exp(-7.632810+0.067773*age+0.568379*hypertension+0.453704*heart\_disease+0.004701*avg\_glucose\_level)}{1 + exp(-7.632810+0.067773*age+0.568379*hypertension+0.453704*heart\_disease+0.004701*avg\_glucose\_level)}$$   
 ```{r, include=FALSE}
 #comparing models
-#reminder: table w/null dev, residual dev, r^2, AIC for each model
 
 #health.glm info
 summary(health.glm)
 fit.bic=BIC(health.glm)
 fit.stat = cbind(health.glm$null.deviance,health.glm$deviance,(1-(health.glm$deviance/health.glm$null.deviance)),health.glm$aic,fit.bic)
 colnames(fit.stat) = c("Null Deviance","Residual Deviance","R^2","AIC","BIC")
-#print(fit.stat)
-#R^2: 1-(1141.8/1411) =0.1907867
 
 #health2.glm info
 summary(health2.glm)
 health2.bic=BIC(health2.glm)
 health2.stat = cbind(health2.glm$null.deviance,health2.glm$deviance,(1-(health2.glm$deviance/health2.glm$null.deviance)),health2.glm$aic,health2.bic)
 colnames(health2.stat) = c("Null Deviance","Residual Deviance","R^2","AIC","BIC")
-#print(health2.stat)
-#R^2: 1-(1149/1411) =0.1856839
 
 #health3.glm info
 summary(health3.glm)
 health3.bic=BIC(health3.glm)
 health3.stat = cbind(health3.glm$null.deviance,health3.glm$deviance,(1-(health3.glm$deviance/health3.glm$null.deviance)),health3.glm$aic, health3.bic)
 colnames(fit.stat) = c("Null Deviance","Residual Deviance","R^2","AIC","BIC")
-#print(health3.stat)
-#R^2: 1-(1154.1/1411) = 0.1820695
 
 goodness.fit=rbind(fit.stat,health2.stat,health3.stat)
 rownames(goodness.fit) = c("health.glm","health2.glm","health3.glm")
-#some info for explaining why we're picking the predictors from health2.glm:
-#lower residual dev, higher R^2, and lower AIC for health2.glm shows that including the heart_disease predictor helps to create a better model
-
-
-#logistic reg. coefficients for equation:
-
-#Intercept:-7.632810
-#Age: 0.067773
-#hypertension1:0.568379
-#heart_disease1:0.453704
-#avg_glucose_level: 0.004701
 ```
 
 Additional information was obtained by using the Goodness of Fit statistical hypothesis test. Given the three models we tested above, we are able to determine each models' null deviance, residual deviance, R\^2 value, AIC value, and BIC value. The lower the residual deviance, AIC, and BIC values, the better the model is able to predict the value of the response variable. As for R\^2, a value closest to 1 is best.
@@ -144,8 +140,6 @@ Additional information was obtained by using the Goodness of Fit statistical hyp
 ```{r}
 print(goodness.fit)
 ```
-
-Between all three models, health2.glm and health3.glm provided the closest fit for our data, with health2.glm having a slight advantage in lower residual deviance and AIC values. The test results show that each model's R\^2 value is extremely low, with values being between 0.1 and 0.2, informing us that only 10%-20% of the variance can be explained by our models. This means that using logistic regression to fit our data may not result in the best fitting model. Even so, we can conclude that the model better.health (with predictors age, hypertension1, heart_disease1, and avg_glucose_level) had the best fit compared to the other models and is somewhat accurate in predicting whether or not a stroke will occur. \newpage
 
 ```{r, include=FALSE}
 ##training & testing
@@ -197,58 +191,36 @@ for (i in 1:10) {
     test.specificity[i] = conf.test[1,1]/(conf.test[1,1]+conf.test[2,1])
   }
 }
-```
+train.error.m = mean(train.error)
+test.error.m = mean(test.error)
+test.sensitivity.m = mean(test.sensitivity)
+test.specificity.m = mean(test.specificity)
+
+```   
 
 ```{r, echo=TRUE}
-#Mean of the train error rate
-(train.error.mean = mean(train.error))
-#Mean of the test error
-(test.error.mean = mean(test.error))
-#Test Sensitivity
-test.sensitivity
-(test.sensitivity.mean = mean(test.sensitivity))
-#Test Specificity
-(test.specificity.mean = mean(test.specificity))
-```
-
+## Train Error Rate Mean:
+train.error.m
+## Test Error Rate Mean:
+test.error.m
+## Test Sensitivity Mean:
+test.sensitivity.m
+## Test Specificity Mean:
+test.specificity.m
+```   
+Between the three models, health2.glm and health3.glm provided the closest fit for our data, with health2.glm having a slight advantage with lower residual deviance and AIC values. Each model's R\^2 value is extremely low, with values being between 0.1 and 0.2, indicating that these models are not a good fit for our data. Even so, we conclude that the best linear regression model for fitting the data and predicting whether or not a stroke will occur is the model health2.glm (predictors: age, hypertension, heart_disease, avg_glucose_level). 
 \newpage
 
-# Decision Tree Model
+## Decision Tree (Johnny Le, Giselle Ruiz, Christopher Turcios)
 
 ```{r, message=FALSE, include=FALSE}
-install.packages("tree", repos = "http://cran.us.r-project.org")
-install.packages("randomForest", repos = "http://cran.us.r-project.org")
+#install.packages("tree", repos = "http://cran.us.r-project.org")
+#install.packages("randomForest", repos = "http://cran.us.r-project.org")
 library(tree)
 library(randomForest)
-
-# Load in health Data
-health <- read_csv("healthcare-dataset-stroke-data.csv",
-  col_types = cols(
-    gender = col_factor(levels = c("Male", "Female", "Other")),
-    hypertension = col_factor(levels = c("0", "1")),
-    heart_disease = col_factor(levels = c("0", "1")),
-    ever_married = col_factor(levels = c("No", "Yes")),
-    work_type = col_factor(
-      levels =
-        c("children", "Govt_job", "Never_worked", "Private", "Self-employed")
-    ),
-    Residence_type = col_factor(levels = c("Rural", "Urban")),
-    bmi = col_number(),
-    smoking_status = col_factor(
-      levels =
-        c("formerly smoked", "never smoked", "smokes")
-    ),
-    stroke = col_factor(levels = c("0", "1"))
-  )
-)
-# Remove ID column
-health <- health[, -1]
-# Omit NA values
-health <- na.omit(health)
-# View(health)
 ```
 
-## Base Decision Tree
+### Base Decision Tree
 
 ```{r}
 # Test random forest model 10 times
@@ -299,7 +271,7 @@ plot(health.tree)
 text(health.tree, pretty = 0)
 ```
 
-## Pruned Decision Tree
+### Pruned Decision Tree
 
 ```{r}
 # Test random forest model 10 times
@@ -350,7 +322,7 @@ cat("Test Specificity: ", mean(test.specificity))
 plot(cv.health$size, cv.health$dev, type = "b")
 ```
 
-## Bagged Decision Tree
+### Bagged Decision Tree
 
 ```{r}
 # Test random forest model 10 times
@@ -406,7 +378,7 @@ plot(health.tree.bag)
 text(health.tree.bag, pretty = 0)
 ```
 
-## Random Forest
+### Random Forest
 
 ```{r}
 # Test random forest model 10 times
@@ -469,4 +441,4 @@ text(health.tree.rf, pretty = 0)
 
 \newpage
 
-# Conclusion
+## Conclusion
