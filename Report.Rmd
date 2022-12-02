@@ -2,8 +2,6 @@
 title: "Stroke Analysis Report"
 author: "Christine Do, Alyssa Guillory, Johnny Le, Giselle Ruiz, Christopher Turcios, Jimmy Vuong"
 date: "2022-12-2"
-header-includes:
- \usepackage{graphicx}
 output:
   pdf_document: default
   word_document: default
@@ -70,7 +68,7 @@ health = health[,-1]
 health = na.omit(health)
 ```   
 ### Main Question
-Which factors demonstrate statistical significance in relation to the response variable stroke.
+Which factors demonstrate statistical significance in relation to the response variable stroke?
 \newpage
 
 ## Logistic Regression (Christine Do, Alyssa Guillory, Jimmy Vuong)
@@ -98,7 +96,7 @@ health3.glm = glm(formula = stroke ~ age + hypertension + avg_glucose_level, fam
 ```{r}
 summary(health.glm)
 ```  
-As the summary shows, the predictors: age, hypertension, and avg_glucose_level, show high levels of significance and the predictor heart_disease shows a moderate level of significance. Since our p-values for all four of these predictors are less than $\alpha$=0.1, we believe that these are the most important variables in predicting the probability of having a stoke; To confirm that these variables are significant, we used the backwards step() function to see if it would give us the same significant variables, and it did.   
+As the summary for health.glm shows, the predictors: age, hypertension, and avg_glucose_level, show high levels of significance and the predictor heart_disease shows a moderate level of significance. Since our p-values for all four of these predictors are less than $\alpha$=0.1, we believe that these are the most important variables in predicting the probability of having a stoke; To confirm that these variables are the most significant, we used the backwards step() function to see if it would give us the same significant variables and it did.   
 ```{r,echo=TRUE}
 #Model created from backwards step()
 summary(health2.glm)
@@ -106,7 +104,7 @@ summary(health2.glm)
 summary(health3.glm)
 ```
 
-By removing the predictors that had little to no significance in predicting the response variable, we are able to refit our data into a second model (health2.glm) with the four predictors that are significant. The original model with all predictors had an AIC of 1173.8, while the second model with the four significant predictors had an AIC of 1159.9. As there was not much of a difference between the first and second model, we decided to remove the lowest significant predictor (heart_disease) out of the four to perform one last model refitting on our data. This time, our AIC for the third model (health3.glm) came out to be 1162.1, which was a slight increase compared to the second model.   
+From the health2.glm summary we can see that the AIC is 1159.9, which is an improvement from health.glm's AIC of 1173.8, but not by much. With that in mind, we decided to remove the lowest significant predictor (heart_disease) to perform one last model refitting on our data for further comparison. This time, our AIC for the third model (health3.glm) came out to be 1162.1, which is worse than health2.glm, but still slightly better than health.glm.   
 $$P(stroke = 1) =$$
 
 $$\tiny\frac{exp(-7.632810+0.067773*age+0.568379*hypertension+0.453704*heart\_disease+0.004701*avg\_glucose\_level)}{1 + exp(-7.632810+0.067773*age+0.568379*hypertension+0.453704*heart\_disease+0.004701*avg\_glucose\_level)}$$   
@@ -198,16 +196,12 @@ test.specificity.m = mean(test.specificity)
 
 ```   
 
-```{r, echo=TRUE}
-## Train Error Rate Mean:
-train.error.m
-## Test Error Rate Mean:
-test.error.m
-## Test Sensitivity Mean:
-test.sensitivity.m
-## Test Specificity Mean:
-test.specificity.m
-```   
+```{r, echo=FALSE}
+cat("Train Error Rate Mean: ", train.error.m)
+cat("Test Error Rate Mean: ", test.error.m)
+cat("Test Sensitivity Mean: ", test.sensitivity.m)
+cat("Test Specificity Mean: ", test.specificity.m)
+```  
 Between the three models, health2.glm and health3.glm provided the closest fit for our data, with health2.glm having a slight advantage with lower residual deviance and AIC values. Each model's R\^2 value is extremely low, with values being between 0.1 and 0.2, indicating that these models are not a good fit for our data. Even so, we conclude that the best linear regression model for fitting the data and predicting whether or not a stroke will occur is the model health2.glm (predictors: age, hypertension, heart_disease, avg_glucose_level). 
 \newpage
 
