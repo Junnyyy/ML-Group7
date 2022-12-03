@@ -3,8 +3,8 @@ title: "Stroke Analysis Report"
 author: "Christine Do, Alyssa Guillory, Johnny Le, Giselle Ruiz, Christopher Turcios, Jimmy Vuong"
 date: "2022-12-2"
 output:
-  word_document: default
   pdf_document: default
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -473,6 +473,8 @@ $$
 stroke \sim age + bmi + avg\_glucose\_level + smoking\_status
 $$
 
+\newpage
+
 ## Conclusion
 
 Overall, the predictors most significant in predicting whether or not a stroke may occur based on our best logistic regression model are: age, hypertension, and avg_glucose_level whereas for our Bagged Tree indicated avg_glucose_level, bmi, age, and smoking_status. Surprisingly, heart_disease was not one of the significant factors for the tree models contrary to what we would have assumed.
@@ -483,4 +485,5 @@ Due to the removal of some aspects of the dataset, our models were not able to f
 
 ## Bibliography
 
-Soriano F. (2021, December). Stroke Prediction Dataset Version 1. Retrieved December 2, 2022 from https://www.kaggle.com/datasets/fedesoriano/stroke-prediction-dataset
+Soriano F. (2021, December). Stroke Prediction Dataset Version 1. 
+Retrieved December 2, 2022 from https://www.kaggle.com/datasets/fedesoriano/stroke-prediction-dataset
