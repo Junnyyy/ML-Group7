@@ -211,8 +211,7 @@ Between the three models, health2.glm and health3.glm provided the closest fit f
 
 ## Decision Tree (Johnny Le, Giselle Ruiz, Christopher Turcios)
 
-### Decision Tree Formuala
-
+For our second model, we decided to explore using a tree-based model. More specifically, we decided on a classification decision tree, once again due to our response variable being qualitative with two classes. Using a tree-based model would allow us to more easily visualize the probability of a person having a stroke, all based on our predictor variables. Furthermore, with a classification tree, we would be able to perform multiple actions, such as pruning, bagging, and random forest, to improve our model and its’ error rate.
 
 ```{r, message=FALSE, include=FALSE}
 #install.packages("tree", repos = "http://cran.us.r-project.org")
@@ -223,7 +222,9 @@ library(randomForest)
 
 ### Base Decision Tree
 
-```{r}
+To create a baseline for all of our decision tree based models we created an base decision tree using `tree()` include all data used by our logistic regression model. 
+
+```{r, out.width="60%", fig.align='center'}
 # Test random forest model 10 times
 test.error = 0
 train.error = 0
@@ -272,9 +273,13 @@ plot(health.tree)
 text(health.tree, pretty = 0)
 ```
 
+As the summary above shows there is an extremely low Test Sensitivity, leading us to have low confidence in the tree. Rather than the tree having many factors the model chooses a small set of factors which is an uncommon result. To cover all bases we used pruning to determine if it would provide us with a different result.
+
+\newpage
+
 ### Pruned Decision Tree
 
-```{r}
+```{r, out.width="60%", fig.align='center'}
 # Test random forest model 10 times
 test.error = 0
 train.error = 0
@@ -323,9 +328,13 @@ cat("Test Specificity: ", mean(test.specificity))
 plot(cv.health$size, cv.health$dev, type = "b")
 ```
 
+As seen from the summary above the pruned tree provides quite a different result from normal expectations. A Test Sensitivity of $0$ would mean that the model entirely fails to predict any occurances of stroke. This would make the pruned model unfit. While this deviates from the norm, it is understable. The base decision tree model had an extremely low Test Sensitivity and any pruning attempts would lower fitment towards our data. As pruning has shown to be unfit for a model we create a bagged tree using `randomForest()`.
+
+\newpage
+
 ### Bagged Decision Tree
 
-```{r}
+```{r, out.width="60%", fig.align='center'}
 # Test random forest model 10 times
 test.error = 0
 train.error = 0
@@ -373,15 +382,24 @@ cat("Test Error: ", mean(test.error))
 cat("Test Sensitivity: ", mean(test.sensitivity))
 cat("Test Specificity: ", mean(test.specificity))
 
-varImpPlot(health.bag)
 health.tree.bag <- tree(stroke ~ ., data = health.train, subset = health.bag$inbag)
 plot(health.tree.bag)
 text(health.tree.bag, pretty = 0)
 ```
 
+The bagged model provides the best result thus far. However, the model still suffers from an incredible low Test Sensitivity of only $0.02$ implying the model can only accurate predict a small portion of strokes. 
+
+```{r, out.width="60%", fig.align='center'}
+varImpPlot(health.bag)
+```
+
+As shown on the importance table BMI has an significant impact on the the occurance of stroke. The decision tree does not reflect this result. Differing from the logisitic model the table indicates low impact from Heart Disease, which contradicts common census that Heart Disease has an impact on stroke.
+
+\newpage
+
 ### Random Forest
 
-```{r}
+```{r, out.width="60%", fig.align='center'}
 # Test random forest model 10 times
 test.error = 0
 train.error = 0
@@ -433,17 +451,36 @@ for (i in 1:10) {
 cat("Test Error: ", mean(test.error))
 cat("Test Sensitivity: ", mean(test.sensitivity))
 cat("Test Specificity: ", mean(test.specificity))
+```
 
+The Random Forest model provides a slightly different result from our Bagged model. While there is a $0.002$ decrease in Test Error this is accompanied by a $0.012$ decrease in Test Sensitivity. The decrease in Test Sensitivity is relatively small in scheme of prediction, however, in this situation it makes the Random Forest model worse than our Bagged model.
+
+```{r, out.width="60%", fig.align='center'}
 varImpPlot(health.rf)
+```
+
+```{r, out.width="60%", fig.align='center'}
 health.tree.rf <- tree(stroke ~ ., data = health.train, subset = health.rf$inbag)
 plot(health.tree.rf)
 text(health.tree.rf, pretty = 0)
 ```
 
-\newpage
+Between all of our models the Bagged model was the best. The model was only the best by a small margin. All the other models performed similarly aside from the pruned model. Each model had a small to zero Test Sensitivity which makes our models impractical for usage. 
+
+Our Decision Tree formula would be as follows:
+
+$$
+stroke \sim age + bmi + avg\_glucose\_level + smoking\_status
+$$
 
 ## Conclusion
+
+Overall, the predictors most significant in predicting whether or not a stroke may occur based on our best logistic regression model are: age, hypertension, and avg_glucose_level whereas for our Bagged Tree indicated avg_glucose_level, bmi, age, and smoking_status. Surprisingly, heart_disease was not one of the significant factors for the tree models contrary to what we would have assumed.
+	
+Due to the removal of some aspects of the dataset, our models were not able to fit accurately. Removing the rows with NA values resulted in having 250 observations that had a stroke (1) to 180 observations that had a stroke (1). When we fit our models on this cleaned dataset, the 3246 observations that did not have a stroke (0) seems to skew our predictions (there also seems to not be a strong correlation between the predictors for stroke). As a consequence, our models resulted in having values drastically low (MSE) or extremely high (test specificity). The Logistic Regression model outputted an extremely small R^2 value of 0.1850374, indicating that this model is not a good fit for our dataset. Comparatively, the Bootstrap Aggregating model had provided the best overall prediction performance of all decision tree models when looking relatively at the test sensitivity and test specificity. The Bagging model also had a slight advantage over the Logistic Regression model in terms of having a lower MSE value. 
 
 \newpage
 
 ## Bibliography
+
+Soriano F. (2021, December). Stroke Prediction Dataset Version 1. Retrieved December 2, 2022 from https://www.kaggle.com/datasets/fedesoriano/stroke-prediction-dataset
