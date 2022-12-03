@@ -481,8 +481,6 @@ Overall, the predictors most significant in predicting whether or not a stroke m
 	
 Due to the removal of some aspects of the dataset, our models were not able to fit accurately. Removing the rows with NA values resulted in having 250 observations that had a stroke (1) to 180 observations that had a stroke (1). When we fit our models on this cleaned dataset, the 3246 observations that did not have a stroke (0) seems to skew our predictions (there also seems to not be a strong correlation between the predictors for stroke). As a consequence, our models resulted in having values drastically low (MSE) or extremely high (test specificity). The Logistic Regression model outputted an extremely small R^2 value of 0.1850374, indicating that this model is not a good fit for our dataset. Comparatively, the Bootstrap Aggregating model had provided the best overall prediction performance of all decision tree models when looking relatively at the test sensitivity and test specificity. The Bagging model also had a slight advantage over the Logistic Regression model in terms of having a lower MSE value. 
 
-\newpage
-
 ## Bibliography
 
 Soriano F. (2021, December). Stroke Prediction Dataset Version 1. 
