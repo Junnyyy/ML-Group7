@@ -1,10 +1,10 @@
 ---
 title: "Stroke Analysis Report"
 author: "Christine Do, Alyssa Guillory, Johnny Le, Giselle Ruiz, Christopher Turcios, Jimmy Vuong"
-date: "2022-12-2"
+date: "2022-12-02"
 output:
-  pdf_document: default
   word_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -470,16 +470,16 @@ Between all of our models the Bagged model was the best. The model was only the 
 Our Decision Tree formula would be as follows:
 
 $$
-stroke \sim age + bmi + avg\_glucose\_level + smoking\_status
+stroke \sim age + avg\_glucose\_level + smoking\_status
 $$
 
 \newpage
 
 ## Conclusion
 
-Overall, the predictors most significant in predicting whether or not a stroke may occur based on our best logistic regression model are: age, hypertension, and avg_glucose_level whereas for our Bagged Tree indicated avg_glucose_level, bmi, age, and smoking_status. Surprisingly, heart_disease was not one of the significant factors for the tree models contrary to what we would have assumed.
+Overall, the predictors most significant in predicting whether or not a stroke may occur based on our best logistic regression model are: age, hypertension, heart_disease and avg_glucose_level whereas for our Bagged Tree indicated avg_glucose_level, bmi, age, and smoking_status. Surprisingly, heart_disease was not one of the significant factors for the tree models contrary to what we would have assumed.
 	
-Due to the removal of some aspects of the dataset, our models were not able to fit accurately. Removing the rows with NA values resulted in having 250 observations that had a stroke (1) to 180 observations that had a stroke (1). When we fit our models on this cleaned dataset, the 3246 observations that did not have a stroke (0) seems to skew our predictions (there also seems to not be a strong correlation between the predictors for stroke). As a consequence, our models resulted in having values drastically low (MSE) or extremely high (test specificity). The Logistic Regression model outputted an extremely small R^2 value of 0.1850374, indicating that this model is not a good fit for our dataset. Comparatively, the Bootstrap Aggregating model had provided the best overall prediction performance of all decision tree models when looking relatively at the test sensitivity and test specificity. The Bagging model also had a slight advantage over the Logistic Regression model in terms of having a lower MSE value. 
+Due to the removal of some aspects of the dataset, our models were not able to fit accurately. Removing the rows with NA values resulted in having 250 observations that had a stroke (1) to 180 observations that had a stroke (1). When we fit our models on this cleaned dataset, the 3246 observations that did not have a stroke (0) seems to skew our predictions (there also seems to not be a strong correlation between the predictors for stroke). As a consequence, our models resulted in having values drastically low (test sensitivity) or extremely high (test specificity). The Logistic Regression model outputted an extremely small $R^2$ value of $0.1850374$, indicating that this model is not a good fit for our dataset. Comparatively, the Bootstrap Aggregating model had provided the best overall prediction performance of all decision tree models when looking relatively at the test sensitivity and test specificity. The issues with our models stem from skewed data, the bagged model appears to have a marginal advantage over the logistic regression model (health2.glm) lended by it's test sensitivity indicating it correctly predicts having a stroke more frequently.
 
 ## Bibliography
 
