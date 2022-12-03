@@ -3,13 +3,14 @@ title: "Stroke Analysis Report"
 author: "Christine Do, Alyssa Guillory, Johnny Le, Giselle Ruiz, Christopher Turcios, Jimmy Vuong"
 date: "2022-12-2"
 output:
-  pdf_document: default
   word_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 ```   
+
 \newpage
 
 ## Introduction  
@@ -69,6 +70,7 @@ health = na.omit(health)
 ```   
 ### Main Question
 Which factors demonstrate statistical significance in relation to the response variable stroke?
+
 \newpage
 
 ## Logistic Regression (Christine Do, Alyssa Guillory, Jimmy Vuong)
@@ -80,6 +82,7 @@ Our basic logistic regression formula with all our predictors would be as follow
 ```{r log reg model formula, out.width = '100%'}
 knitr::include_graphics("logreg.png")
 ```   
+
 This is the logistic regression formula when we consider all of our variables as predictors for the response variable stroke. However, we automatically excluded id as a predictor, as it is a unique number arbitrarily used to identify patients, therefore we know it does not influence our response variable. Using the glm() function, we created our initial logistic model with stroke being the response and all the other variables as predictors.  
 ```{r,include=FALSE}
 #create model with all predictors
@@ -107,7 +110,7 @@ summary(health3.glm)
 From the health2.glm summary we can see that the AIC is 1159.9, which is an improvement from health.glm's AIC of 1173.8, but not by much. With that in mind, we decided to remove the lowest significant predictor (heart_disease) to perform one last model refitting on our data for further comparison. This time, our AIC for the third model (health3.glm) came out to be 1162.1, which is worse than health2.glm, but still slightly better than health.glm.   
 $$P(stroke = 1) =$$
 
-$$\tiny\frac{exp(-7.632810+0.067773*age+0.568379*hypertension+0.453704*heart\_disease+0.004701*avg\_glucose\_level)}{1 + exp(-7.632810+0.067773*age+0.568379*hypertension+0.453704*heart\_disease+0.004701*avg\_glucose\_level)}$$   
+$$\frac{exp(-7.632810+0.067773*age+0.568379*hypertension+0.453704*heart\_disease+0.004701*avg\_glucose\_level)}{1 + exp(-7.632810+0.067773*age+0.568379*hypertension+0.453704*heart\_disease+0.004701*avg\_glucose\_level)}$$   
 ```{r, include=FALSE}
 #comparing models
 
@@ -203,9 +206,13 @@ cat("Test Sensitivity Mean: ", test.sensitivity.m)
 cat("Test Specificity Mean: ", test.specificity.m)
 ```  
 Between the three models, health2.glm and health3.glm provided the closest fit for our data, with health2.glm having a slight advantage with lower residual deviance and AIC values. Each model's R\^2 value is extremely low, with values being between 0.1 and 0.2, indicating that these models are not a good fit for our data. Even so, we conclude that the best linear regression model for fitting the data and predicting whether or not a stroke will occur is the model health2.glm (predictors: age, hypertension, heart_disease, avg_glucose_level). 
+
 \newpage
 
 ## Decision Tree (Johnny Le, Giselle Ruiz, Christopher Turcios)
+
+### Decision Tree Formuala
+
 
 ```{r, message=FALSE, include=FALSE}
 #install.packages("tree", repos = "http://cran.us.r-project.org")
@@ -437,5 +444,6 @@ text(health.tree.rf, pretty = 0)
 
 ## Conclusion
 
+\newpage
 
 ## Bibliography
